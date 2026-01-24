@@ -1,0 +1,23 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 8px;
+    background: #f8f8f8;
+}
+
+h1 {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+p {
+    font-weight: 300;
+    margin-bottom: 8px;
+}
