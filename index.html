@@ -4,40 +4,210 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="index.css" />
-        <title>Blog | mappso</title>
+        <title>AI Agents While You Sleep | mappso</title>
         <link rel="icon" type="image/png" href="favicon.png" />
+        <style>
+            .diagram {
+                width: 100%;
+                margin: 32px 0;
+            }
+            .diagram svg {
+                width: 100%;
+                height: auto;
+            }
+            .stage-label {
+                font-family: 'SF Mono', 'Monaco', monospace;
+                font-size: 0.75rem;
+            }
+            .inverted-text {
+                fill: var(--bg);
+            }
+        </style>
     </head>
     <body>
-        <h1>Blog</h1>
-        <p class="intro">Welcome to mappso.</p>
+        <h1>AI Agents While You Sleep</h1>
+        <p class="intro">How automation compounds—from a meeting recording to implemented code.</p>
 
-        <h1>AI</h1>
-        <p>I build an AI powered software consultant house.</p>
+        <p>You wake up to three notifications. The first is a PR ready for review—implementing the feature you discussed yesterday. The second is a validation report confirming all tests pass. The third is a time estimate: "Equivalent to 4 hours of human development."</p>
 
-        <h3>1. Record 43m Google Meeting with a customer going back and fourth about a new feature.</h3>
-        <h3>2. Transcripe of the whole recording automatically using n8n. <em style="font-size: small; opacity: 0.5;">- Thanks Whisper</em></h3> 
-        <h3>3. Create a <em>draft</em> prompt. Just mentioning that this is a trsansctiption of a Google Meeting with the PO.</h3>
-        <img src="img1.jpg" alt="Abstract landscape" />
+        <p>You didn't write a single line of code. You had a meeting, went to bed, and let the agents work.</p>
 
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
+        <h2>The Pipeline</h2>
 
-        <h2>Wanderings</h2>
-        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        <p>It starts with a recording. A 43-minute Google Meet where you and the product owner discuss a new feature. You're not taking notes—you're just talking through requirements, edge cases, preferences.</p>
 
-        <img src="img2.jpg" alt="Misty morning" />
+        <p>When the call ends, a chain reaction begins:</p>
 
-        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
+        <div class="diagram">
+            <svg viewBox="0 0 580 420" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect width="580" height="420" fill="none"/>
 
-        <h3>A Smaller Thought</h3>
-        <p>Consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.</p>
+                <!-- Step 1: Google Meet -->
+                <rect x="20" y="20" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="85" y="50" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Google Meet</text>
 
-        <h2>Fragments</h2>
-        <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                <!-- Arrow 1 -->
+                <path d="M85 70 L85 90" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="85,98 81,90 89,90" fill="currentColor"/>
 
-        <img src="img3.jpg" alt="Still life" />
+                <!-- Step 2: Google Drive -->
+                <rect x="20" y="100" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="85" y="130" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Google Drive</text>
+                <text x="85" y="145" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">recording.mp4</text>
 
-        <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.</p>
+                <!-- Arrow 2 -->
+                <path d="M85 150 L85 170" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="85,178 81,170 89,170" fill="currentColor"/>
 
-        <p>Omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.</p>
+                <!-- Step 3: n8n Transcribe -->
+                <rect x="20" y="180" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="85" y="205" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">n8n</text>
+                <text x="85" y="220" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">Whisper transcribe</text>
+
+                <!-- Horizontal split -->
+                <path d="M150 205 L180 205" stroke="currentColor" stroke-width="1.5" fill="none"/>
+
+                <!-- Branch to Notion -->
+                <path d="M180 205 L180 45 L220 45" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="228,45 220,41 220,49" fill="currentColor"/>
+
+                <!-- Branch down to Telegram -->
+                <path d="M180 205 L180 285 L220 285" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="228,285 220,281 220,289" fill="currentColor"/>
+
+                <!-- Notion box -->
+                <rect x="230" y="20" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="295" y="45" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Notion</text>
+                <text x="295" y="60" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">draft PLAN.md</text>
+
+                <!-- Telegram box -->
+                <rect x="230" y="260" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="295" y="285" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Telegram</text>
+                <text x="295" y="300" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">"Which project?"</text>
+
+                <!-- Arrow from Telegram to response -->
+                <path d="M360 285 L390 285" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="398,285 390,281 390,289" fill="currentColor"/>
+
+                <!-- Response bubble -->
+                <rect x="400" y="260" width="80" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <text x="440" y="290" text-anchor="middle" fill="currentColor" font-size="12" font-style="italic" font-family="Newsreader, Georgia, serif">"sapera"</text>
+
+                <!-- Arrow from response down to n8n create PR -->
+                <path d="M440 310 L440 350 L360 350" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="352,350 360,346 360,354" fill="currentColor"/>
+
+                <!-- n8n create PR -->
+                <rect x="230" y="330" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="295" y="355" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">n8n</text>
+                <text x="295" y="370" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">create PR + labels</text>
+
+                <!-- Arrow to GitHub -->
+                <path d="M230 355 L200 355 L200 395 L455 395" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="463,395 455,391 455,399" fill="currentColor"/>
+
+                <!-- GitHub Actions box - emphasized -->
+                <rect x="465" y="370" width="95" height="50" rx="6" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
+                <text x="512" y="395" text-anchor="middle" class="inverted-text" font-size="12" font-family="Newsreader, Georgia, serif">Task</text>
+                <text x="512" y="410" text-anchor="middle" class="inverted-text" font-size="12" font-family="Newsreader, Georgia, serif">Orchestrator</text>
+            </svg>
+        </div>
+
+        <p>The transcription lands in Notion as a draft PLAN.md—a structured document describing what needs to be built. Simultaneously, Telegram pings me: "New plan ready. Which project?"</p>
+
+        <p>I reply with a single word. n8n creates a PR with the plan attached and adds a label: <code>claude-plan</code>.</p>
+
+        <p>That label triggers the orchestrator.</p>
+
+        <h2>The Orchestrator</h2>
+
+        <p>GitHub Actions watches for specific labels. Each label triggers a stage, and each stage prepares the next:</p>
+
+        <div class="diagram">
+            <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Timeline bar -->
+                <rect x="40" y="95" width="500" height="10" rx="5" fill="currentColor" opacity="0.1"/>
+
+                <!-- Stage 1: init -->
+                <circle cx="70" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="70" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">1</text>
+                <text x="70" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">init</text>
+
+                <!-- Stage 2: plan -->
+                <circle cx="160" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="160" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">2</text>
+                <text x="160" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">plan</text>
+
+                <!-- Stage 3: execute -->
+                <circle cx="250" cy="100" r="20" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
+                <text x="250" y="105" text-anchor="middle" class="inverted-text" font-size="12" font-family="monospace">3</text>
+                <text x="250" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace">execute</text>
+
+                <!-- Stage 4: validate -->
+                <circle cx="340" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="340" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">4</text>
+                <text x="340" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">validate</text>
+
+                <!-- Stage 5: fix -->
+                <circle cx="430" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="430" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">5</text>
+                <text x="430" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">fix</text>
+
+                <!-- Fix loop arrow -->
+                <path d="M430 80 C430 50, 340 50, 340 80" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+                <polygon points="340,80 336,72 344,72" fill="currentColor" opacity="0.5"/>
+
+                <!-- Stage 6: finalize -->
+                <circle cx="520" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="520" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">6</text>
+                <text x="520" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">finalize</text>
+
+                <!-- Labels above -->
+                <text x="295" y="30" text-anchor="middle" fill="currentColor" font-size="11" font-family="Newsreader, Georgia, serif" font-style="italic">Each stage adds the next label when complete</text>
+            </svg>
+        </div>
+
+        <p><strong>Plan</strong> analyzes the requirements and creates a detailed implementation plan—what files to modify, what patterns to follow, what tests to write.</p>
+
+        <p><strong>Execute</strong> is where the code gets written. Claude implements the plan in an isolated git worktree, keeping the main branch clean until validation passes.</p>
+
+        <p><strong>Validate</strong> builds the project, starts services, and runs tests. If something fails, it documents the issues and triggers <strong>Fix</strong>.</p>
+
+        <p><strong>Fix</strong> reads the validation errors, applies corrections, and triggers validation again. This loop continues until everything passes or a human intervenes.</p>
+
+        <p><strong>Finalize</strong> splits the changes into logical commits and estimates how long this would have taken a human developer.</p>
+
+        <h3>Ralph Loop</h3>
+
+        <p>The key innovation is <em>Ralph Loop</em>—a pattern for iterative AI execution. Each iteration, Claude runs with fresh context but can see summaries of its previous work. When it's done, it signals completion with a special tag.</p>
+
+        <p>This solves the context window problem. Long implementations don't need to fit in a single context—they're broken into digestible iterations, each building on the last.</p>
+
+        <h2>The Compound Effect</h2>
+
+        <p>None of these pieces are remarkable on their own:</p>
+
+        <ul>
+            <li><strong>n8n</strong> connects APIs without code. Watch a folder, transcribe a file, send a message.</li>
+            <li><strong>GitHub Actions</strong> runs workflows on events. A label triggers a job.</li>
+            <li><strong>Claude</strong> writes code when given context. A plan becomes an implementation.</li>
+        </ul>
+
+        <p>But connected together, they create something that feels like magic: meetings become implementations. Ideas become PRs. Sleep becomes productive time.</p>
+
+        <p>The compound effect isn't in any single tool—it's in the interfaces between them. A recording becomes a transcript becomes a plan becomes a label becomes a workflow becomes code becomes a PR.</p>
+
+        <p>Each transformation is simple. The chain is powerful.</p>
+
+        <hr class="ornament"/>
+
+        <p>I'm building more of this at <a href="https://mappso.nl">mappso</a>—an AI-powered software consultancy where the consultants are agents and the humans are curators.</p>
+
+        <p>The future of software development isn't AI replacing developers. It's developers orchestrating AI agents that work while they sleep.</p>
+
+        <footer class="article-footer">
+            <p>January 2026</p>
+        </footer>
     </body>
 </html>
