@@ -210,7 +210,8 @@ pre code {
 kbd {
     font-family: 'SF Mono', 'Monaco', monospace;
     font-size: 0.8em;
-    background: #fff;
+    background: var(--code-bg);
+    color: var(--text);
     border: 1px solid var(--border);
     border-bottom-width: 2px;
     border-radius: 4px;
@@ -575,7 +576,7 @@ section:last-child {
     }
 
     kbd {
-        background: #2a2a2a;
+        background: var(--code-bg);
         border-color: #444;
     }
 

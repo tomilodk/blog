@@ -126,8 +126,13 @@ body.design-page {
     background: #0d0d0d;
 }
 
+.theme-container kbd {
+    background: var(--code-bg);
+    color: var(--text);
+    border-color: var(--border);
+}
+
 .theme-container.dark kbd {
-    background: #2a2a2a;
     border-color: #444;
 }
 
