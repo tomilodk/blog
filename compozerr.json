@@ -1,6 +1,5 @@
 {
   "id": "4744a6b5-a168-4d86-a323-f42022257cb1",
   "type": "project",
-  "name": "mappso-blog",
-  "start": "docker-compose -f docker-compose.yml up -d"
+  "name": "mappso-blog"
 }
