@@ -537,6 +537,86 @@ time {
 }
 
 /* ========================================
+   Blog Index
+   ======================================== */
+.blog-header {
+    margin-bottom: 56px;
+}
+
+.blog-name {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: lowercase;
+    color: var(--text-faint);
+    margin: 0;
+}
+
+.post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.post-item {
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.post-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.post-item a {
+    text-decoration: none;
+    display: block;
+}
+
+.post-item h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0 0 6px 0;
+    padding: 0;
+    border: none;
+    transition: color 0.15s ease;
+}
+
+.post-item a:hover h2 {
+    color: var(--link-hover);
+}
+
+.post-item .intro {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+}
+
+.post-item time {
+    font-size: 0.85rem;
+    color: var(--text-faint);
+}
+
+/* ========================================
+   Post Navigation
+   ======================================== */
+.post-nav {
+    margin-bottom: 40px;
+}
+
+.post-nav a {
+    font-size: 0.85rem;
+    color: var(--text-faint);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.post-nav a:hover {
+    color: var(--text);
+}
+
+/* ========================================
    Sections (for design page)
    ======================================== */
 section {

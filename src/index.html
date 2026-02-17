@@ -3,292 +3,52 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="index.css" />
-        <title>AI Agents While You Sleep | mappso</title>
-        <link rel="icon" type="image/png" href="assets/favicon.png" />
-        <style>
-            .diagram {
-                width: 100%;
-                margin: 32px 0;
+        <link rel="stylesheet" href="/index.css" />
+        <title>mappso</title>
+        <link rel="icon" type="image/png" href="/assets/favicon.png" />
+        <link rel="canonical" href="https://mappso.com/" />
+        <meta name="description" content="Writing about building software, deployment infrastructure, and AI-powered development workflows." />
+        <meta property="og:title" content="mappso" />
+        <meta property="og:description" content="Writing about building software, deployment infrastructure, and AI-powered development workflows." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://mappso.com/" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="mappso" />
+        <meta name="twitter:description" content="Writing about building software, deployment infrastructure, and AI-powered development workflows." />
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            "name": "mappso",
+            "description": "Writing about building software, deployment infrastructure, and AI-powered development workflows.",
+            "url": "https://mappso.com",
+            "author": {
+                "@type": "Person",
+                "name": "Milo"
             }
-            .diagram svg {
-                width: 100%;
-                height: auto;
-            }
-            .stage-label {
-                font-family: 'SF Mono', 'Monaco', monospace;
-                font-size: 0.75rem;
-            }
-            .inverted-text {
-                fill: var(--bg);
-            }
-        </style>
+        }
+        </script>
     </head>
     <body>
-        <h1>AI Agents While You Sleep</h1>
-        <p class="intro">How automation compounds -from a meeting recording to implemented code.</p>
+        <header class="blog-header">
+            <p class="blog-name">mappso</p>
+        </header>
 
-        <p>You wake up to three notifications. The first is a PR ready for review -implementing the feature you discussed yesterday. The second is a validation report confirming all tests pass. The third is a time estimate: "Equivalent to 4 hours of human development."</p>
-
-        <p>You didn't write a single line of code. You had a meeting, went to bed, and let the agents work.</p>
-
-        <h2>The Pipeline</h2>
-
-        <p>It starts with a recording. A 43-minute Google Meet where you and the product owner discuss a new feature. You're not taking notes -you're just talking through requirements, edge cases, preferences.</p>
-
-        <p>When the call ends, a chain reaction begins:</p>
-
-        <div class="diagram">
-            <svg viewBox="0 0 580 420" xmlns="http://www.w3.org/2000/svg">
-                <!-- Background -->
-                <rect width="580" height="420" fill="none"/>
-
-                <!-- Step 1: Google Meet -->
-                <rect x="20" y="20" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="85" y="50" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Google Meet</text>
-
-                <!-- Arrow 1 -->
-                <path d="M85 70 L85 90" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <polygon points="85,98 81,90 89,90" fill="currentColor"/>
-
-                <!-- Step 2: Google Drive -->
-                <rect x="20" y="100" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="85" y="130" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Google Drive</text>
-                <text x="85" y="145" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">recording.mp4</text>
-
-                <!-- Arrow 2 -->
-                <path d="M85 150 L85 170" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <polygon points="85,178 81,170 89,170" fill="currentColor"/>
-
-                <!-- Step 3: n8n Transcribe -->
-                <rect x="20" y="180" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="85" y="205" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">n8n</text>
-                <text x="85" y="220" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">Whisper transcribe</text>
-
-                <!-- Horizontal split -->
-                <path d="M150 205 L180 205" stroke="currentColor" stroke-width="1.5" fill="none"/>
-
-                <!-- Branch to Notion -->
-                <path d="M180 205 L180 45 L220 45" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <polygon points="228,45 220,41 220,49" fill="currentColor"/>
-
-                <!-- Branch down to Telegram -->
-                <path d="M180 205 L180 285 L220 285" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <polygon points="228,285 220,281 220,289" fill="currentColor"/>
-
-                <!-- Notion box -->
-                <rect x="230" y="20" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="295" y="45" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Notion</text>
-                <text x="295" y="60" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">draft PLAN.md</text>
-
-                <!-- Telegram box -->
-                <rect x="230" y="260" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="295" y="285" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Telegram</text>
-                <text x="295" y="300" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">"Which project?"</text>
-
-                <!-- Arrow from Telegram to response -->
-                <path d="M360 285 L390 285" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <polygon points="398,285 390,281 390,289" fill="currentColor"/>
-
-                <!-- Response bubble -->
-                <rect x="400" y="260" width="80" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4,3"/>
-                <text x="440" y="290" text-anchor="middle" fill="currentColor" font-size="12" font-style="italic" font-family="Newsreader, Georgia, serif">"acme"</text>
-
-                <!-- Arrow from response down to n8n create PR -->
-                <path d="M440 310 L440 350 L360 350" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <polygon points="352,350 360,346 360,354" fill="currentColor"/>
-
-                <!-- n8n create PR -->
-                <rect x="230" y="330" width="130" height="50" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="295" y="355" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">n8n</text>
-                <text x="295" y="370" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.5" font-family="monospace">create PR + labels</text>
-
-                <!-- Arrow to GitHub -->
-                <path d="M230 355 L200 355 L200 395 L455 395" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <polygon points="463,395 455,391 455,399" fill="currentColor"/>
-
-                <!-- GitHub Actions box - emphasized -->
-                <rect x="465" y="370" width="95" height="50" rx="6" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
-                <text x="512" y="395" text-anchor="middle" class="inverted-text" font-size="12" font-family="Newsreader, Georgia, serif">Task</text>
-                <text x="512" y="410" text-anchor="middle" class="inverted-text" font-size="12" font-family="Newsreader, Georgia, serif">Orchestrator</text>
-            </svg>
-        </div>
-
-        <p>The transcription lands in Notion as a draft PLAN.md -a structured document describing what needs to be built. Simultaneously, Telegram pings me: "New plan ready. Which project?"</p>
-
-        <p>I reply with a single word. n8n creates a PR with the plan attached and adds a label: <code>claude-plan</code>.</p>
-
-        <p>That label triggers the orchestrator.</p>
-
-        <h2>The Orchestrator</h2>
-
-        <p>GitHub Actions watches for specific labels. Each label triggers a stage, and each stage prepares the next:</p>
-
-        <div class="diagram">
-            <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
-                <!-- Timeline bar -->
-                <rect x="40" y="95" width="500" height="10" rx="5" fill="currentColor" opacity="0.1"/>
-
-                <!-- Stage 1: init -->
-                <circle cx="70" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="70" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">1</text>
-                <text x="70" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">init</text>
-
-                <!-- Stage 2: plan -->
-                <circle cx="160" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="160" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">2</text>
-                <text x="160" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">plan</text>
-
-                <!-- Stage 3: execute -->
-                <circle cx="250" cy="100" r="20" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
-                <text x="250" y="105" text-anchor="middle" class="inverted-text" font-size="12" font-family="monospace">3</text>
-                <text x="250" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace">execute</text>
-
-                <!-- Stage 4: validate -->
-                <circle cx="340" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="340" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">4</text>
-                <text x="340" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">validate</text>
-
-                <!-- Stage 5: fix -->
-                <circle cx="430" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="430" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">5</text>
-                <text x="430" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">fix</text>
-
-                <!-- Fix loop arrow -->
-                <path d="M430 80 C430 50, 340 50, 340 80" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
-                <polygon points="340,80 336,72 344,72" fill="currentColor" opacity="0.5"/>
-
-                <!-- Stage 6: finalize -->
-                <circle cx="520" cy="100" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <text x="520" y="105" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">6</text>
-                <text x="520" y="145" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.7">finalize</text>
-
-                <!-- Labels above -->
-                <text x="295" y="30" text-anchor="middle" fill="currentColor" font-size="11" font-family="Newsreader, Georgia, serif" font-style="italic">Each stage adds the next label when complete</text>
-            </svg>
-        </div>
-
-        <p><strong>Init</strong> runs once per project to discover how to build, run, and test it. It deploys specialized subagents that explore the codebase -more on this <a href="#init">below</a>.</p>
-
-        <p><strong>Plan</strong> analyzes the requirements and creates a detailed implementation plan -what files to modify, what patterns to follow, what tests to write.</p>
-
-        <p><strong>Execute</strong> is where the code gets written. Claude implements the plan in an isolated git worktree, keeping the main branch clean until validation passes.</p>
-
-        <p><strong>Validate</strong> builds the project, starts services, and runs tests. If something fails, it documents the issues and triggers <strong>Fix</strong>.</p>
-
-        <p><strong>Fix</strong> reads the validation errors, applies corrections, and triggers validation again. This loop continues until everything passes or a human intervenes.</p>
-
-        <p><strong>Finalize</strong> splits the changes into logical commits and estimates how long this would have taken a human developer.</p>
-
-        <h3 id="init">Init: Teaching the Orchestrator</h3>
-
-        <p>Before the orchestrator can work on a project, it needs to understand it. That's what <strong>Init</strong> does -it explores a codebase and discovers how to build, run, and test it.</p>
-
-        <p>Init doesn't just read config files. It deploys a team of specialized subagents:</p>
-
-        <ul>
-            <li><strong>Project Scout</strong> explores the directory structure, finds package.json, *.csproj, Dockerfiles -anything that reveals how the project is organized.</li>
-            <li><strong>Build Agent</strong> discovers and verifies build commands. It doesn't just find <code>npm run build</code> -it runs it and confirms it works.</li>
-            <li><strong>Service Discovery</strong> figures out how to start and stop services, finds health endpoints, and tests them with curl.</li>
-            <li><strong>Navigation Builder</strong> creates a playbook of routes and UI elements for validation testing.</li>
+        <ul class="post-list">
+            <li class="post-item">
+                <a href="/posts/building-compozerr/">
+                    <h2>Building Compozerr</h2>
+                    <p class="intro">Why I built my own deployment platform — and what it taught me about infrastructure, developer experience, and knowing when to stop.</p>
+                    <time datetime="2026-02-17">February 2026</time>
+                </a>
+            </li>
+            <li class="post-item">
+                <a href="/posts/ai-agents-while-you-sleep/">
+                    <h2>AI Agents While You Sleep</h2>
+                    <p class="intro">How automation compounds — from a meeting recording to implemented code.</p>
+                    <time datetime="2026-01-15">January 2026</time>
+                </a>
+            </li>
         </ul>
-
-        <p>Each subagent is a focused prompt that runs in its own context. They report back findings, and the orchestrator assembles everything into a <code>PROJECT_CONFIG.json</code>:</p>
-
-<pre><code>{
-  "name": "acme-app",
-  "start": {
-    "backend": {
-      "command": "npm run dev",
-      "ready_check": "curl -s http://localhost:3000/health",
-      "timeout_seconds": 60
-    }
-  },
-  "validation": {
-    "build": { "command": "npm run build" },
-    "base_url": "http://localhost:3000"
-  }
-}</code></pre>
-
-        <p>Once init completes, the orchestrator knows everything it needs. Future PRs on this project skip straight to planning.</p>
-
-        <h3>The Toolkit</h3>
-
-        <p>The orchestrator doesn't run inside the target project -it copies a toolkit into an isolated git worktree. This toolkit contains everything Claude needs to work autonomously:</p>
-
-        <div class="diagram">
-            <svg viewBox="0 0 580 280" xmlns="http://www.w3.org/2000/svg">
-                <!-- Worktree container -->
-                <rect x="20" y="20" width="540" height="240" rx="8" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4,3"/>
-                <text x="40" y="45" fill="currentColor" font-size="11" font-family="monospace" opacity="0.6">.worktrees/claude-task-42/</text>
-
-                <!-- Project files -->
-                <rect x="40" y="60" width="150" height="80" rx="4" fill="currentColor" opacity="0.05" stroke="currentColor" stroke-width="1"/>
-                <text x="115" y="85" text-anchor="middle" fill="currentColor" font-size="12" font-family="Newsreader, Georgia, serif">Project Files</text>
-                <text x="115" y="105" text-anchor="middle" fill="currentColor" font-size="9" font-family="monospace" opacity="0.5">src/, package.json</text>
-                <text x="115" y="118" text-anchor="middle" fill="currentColor" font-size="9" font-family="monospace" opacity="0.5">PLAN.md</text>
-
-                <!-- Toolkit container -->
-                <rect x="220" y="60" width="320" height="180" rx="4" fill="currentColor" opacity="0.08" stroke="currentColor" stroke-width="1"/>
-                <text x="240" y="85" fill="currentColor" font-size="11" font-family="monospace">.claude-toolkit/</text>
-
-                <!-- MCP Server -->
-                <rect x="240" y="100" width="130" height="50" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
-                <text x="305" y="120" text-anchor="middle" fill="currentColor" font-size="10" font-family="Newsreader, Georgia, serif">MCP Server</text>
-                <text x="305" y="135" text-anchor="middle" fill="currentColor" font-size="8" font-family="monospace" opacity="0.6">iteration, evidence</text>
-
-                <!-- Hooks -->
-                <rect x="390" y="100" width="130" height="50" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
-                <text x="455" y="120" text-anchor="middle" fill="currentColor" font-size="10" font-family="Newsreader, Georgia, serif">Hooks</text>
-                <text x="455" y="135" text-anchor="middle" fill="currentColor" font-size="8" font-family="monospace" opacity="0.6">ralph-exit.js</text>
-
-                <!-- Subagents -->
-                <rect x="240" y="165" width="130" height="55" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
-                <text x="305" y="185" text-anchor="middle" fill="currentColor" font-size="10" font-family="Newsreader, Georgia, serif">Subagent Prompts</text>
-                <text x="305" y="200" text-anchor="middle" fill="currentColor" font-size="8" font-family="monospace" opacity="0.6">scout, build, service</text>
-
-                <!-- Scripts -->
-                <rect x="390" y="165" width="130" height="55" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
-                <text x="455" y="185" text-anchor="middle" fill="currentColor" font-size="10" font-family="Newsreader, Georgia, serif">Scripts</text>
-                <text x="455" y="200" text-anchor="middle" fill="currentColor" font-size="8" font-family="monospace" opacity="0.6">ralph-runner.js</text>
-
-                <!-- Arrow from project to toolkit -->
-                <path d="M190 100 L210 100" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="2,2"/>
-            </svg>
-        </div>
-
-        <p>The toolkit includes an <strong>MCP server</strong> that gives Claude custom tools -tracking iteration history, storing evidence, managing navigation routes. It includes <strong>hooks</strong> that detect when Claude signals completion. And it includes the <strong>subagent prompts</strong> themselves -focused instructions for specific tasks.</p>
-
-        <p>This architecture means the orchestrator is project-agnostic. The same workflows handle a React frontend, a .NET backend, or a monorepo with both. Init discovers the specifics; the toolkit provides the scaffolding.</p>
-
-        <h3>Ralph Loop</h3>
-
-        <p>The key innovation is <em>Ralph Loop</em> -a pattern for iterative AI execution. Each iteration, Claude runs with fresh context but can see summaries of its previous work. When it's done, it signals completion with a special tag.</p>
-
-        <p>This solves the context window problem. Long implementations don't need to fit in a single context -they're broken into digestible iterations, each building on the last.</p>
-
-        <h2>The Compound Effect</h2>
-
-        <p>None of these pieces are remarkable on their own:</p>
-
-        <ul>
-            <li><strong>n8n</strong> connects APIs without code. Watch a folder, transcribe a file, send a message.</li>
-            <li><strong>GitHub Actions</strong> runs workflows on events. A label triggers a job.</li>
-            <li><strong>Claude</strong> writes code when given context. A plan becomes an implementation.</li>
-        </ul>
-
-        <p>But connected together, they create something that feels like magic: meetings become implementations. Ideas become PRs. Sleep becomes productive time.</p>
-
-        <p>The compound effect isn't in any single tool -it's in the interfaces between them. A recording becomes a transcript becomes a plan becomes a label becomes a workflow becomes code becomes a PR.</p>
-
-        <p>Each transformation is simple. The chain is powerful.</p>
-
-        <hr class="ornament"/>
-
-        <p>The future of software development isn't AI replacing developers. It's developers orchestrating AI agents that work while they sleep.</p>
-
-        <footer class="article-footer">
-            <p>January 2026</p>
-        </footer>
     </body>
 </html>

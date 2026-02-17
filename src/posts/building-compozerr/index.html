@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/index.css" />
+        <title>Building Compozerr | mappso</title>
+        <link rel="icon" type="image/png" href="/assets/favicon.png" />
+        <link rel="canonical" href="https://mappso.com/posts/building-compozerr/" />
+        <meta name="description" content="Why I built my own deployment platform — from deployment frustration to a system that handles SSL, routing, and infrastructure with one command." />
+        <meta property="og:title" content="Building Compozerr" />
+        <meta property="og:description" content="Why I built my own deployment platform — from deployment frustration to a system that handles SSL, routing, and infrastructure with one command." />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content="https://mappso.com/posts/building-compozerr/" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Building Compozerr" />
+        <meta name="twitter:description" content="Why I built my own deployment platform — from deployment frustration to a system that handles SSL, routing, and infrastructure with one command." />
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": "Building Compozerr",
+            "description": "Why I built my own deployment platform — from deployment frustration to a system that handles SSL, routing, and infrastructure with one command.",
+            "datePublished": "2026-02-17",
+            "author": {
+                "@type": "Person",
+                "name": "Milo"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "mappso"
+            }
+        }
+        </script>
+        <style>
+            .diagram {
+                width: 100%;
+                margin: 32px 0;
+            }
+            .diagram svg {
+                width: 100%;
+                height: auto;
+            }
+            .inverted-text {
+                fill: var(--bg);
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="/">&larr; mappso</a>
+        </nav>
+
+        <h1>Building Compozerr</h1>
+        <p class="intro">Why I built my own deployment platform — and what it taught me about infrastructure, developer experience, and knowing when to stop.</p>
+
+        <p>Every time I started a new project, the same ritual awaited. Write the application code — the fun part — then spend hours configuring deployment. Set up a server. Configure a reverse proxy. Generate SSL certificates. Wire up Docker. Debug networking. Set up CI/CD. Configure DNS.</p>
+
+        <p>The code was the easy part. The infrastructure was the tax.</p>
+
+        <p>I'd used Vercel for frontends, Railway for quick deploys, and bare VPS instances for anything that didn't fit the mold. Each solved part of the problem. None handled the full picture — a modular application with a .NET backend, React frontend, PostgreSQL database, and multiple services that all needed to talk to each other.</p>
+
+        <p>So I built the thing I wished existed.</p>
+
+        <h2>The Vision</h2>
+
+        <p>One command to deploy anything. Not just a frontend. Not just a single container. A full application — multiple services, automatic SSL, custom domains, dynamic routing — all managed from the terminal.</p>
+
+<pre><code>compozerr deploy</code></pre>
+
+        <p>That's it. The platform figures out the rest.</p>
+
+        <p>But getting to that single command required building three interconnected systems, each handling a different layer of the problem.</p>
+
+        <h2>Three Layers</h2>
+
+        <div class="diagram">
+            <svg viewBox="0 0 580 340" xmlns="http://www.w3.org/2000/svg">
+                <!-- Layer 1: CLI -->
+                <rect x="20" y="20" width="540" height="70" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="50" y="50" fill="currentColor" font-size="9" font-family="monospace" opacity="0.5">LAYER 1</text>
+                <text x="50" y="70" fill="currentColor" font-size="15" font-family="Newsreader, Georgia, serif">CLI</text>
+                <text x="290" y="58" text-anchor="middle" fill="currentColor" font-size="11" font-family="monospace" opacity="0.5">Bun + TypeScript + Commander.js</text>
+
+                <!-- Arrow -->
+                <path d="M290 90 L290 120" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="290,128 286,120 294,120" fill="currentColor"/>
+                <text x="300" y="112" fill="currentColor" font-size="9" font-family="monospace" opacity="0.4">HTTPS</text>
+
+                <!-- Layer 2: Web -->
+                <rect x="20" y="130" width="540" height="70" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="50" y="160" fill="currentColor" font-size="9" font-family="monospace" opacity="0.5">LAYER 2</text>
+                <text x="50" y="180" fill="currentColor" font-size="15" font-family="Newsreader, Georgia, serif">Web API + Dashboard</text>
+                <text x="370" y="168" text-anchor="middle" fill="currentColor" font-size="11" font-family="monospace" opacity="0.5">.NET 9 + React 19</text>
+
+                <!-- Arrow -->
+                <path d="M290 200 L290 230" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="290,238 286,230 294,230" fill="currentColor"/>
+                <text x="300" y="222" fill="currentColor" font-size="9" font-family="monospace" opacity="0.4">deploy jobs</text>
+
+                <!-- Layer 3: Hosting -->
+                <rect x="20" y="240" width="540" height="80" rx="6" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
+                <text x="50" y="270" class="inverted-text" font-size="9" font-family="monospace" opacity="0.7">LAYER 3</text>
+                <text x="50" y="292" class="inverted-text" font-size="15" font-family="Newsreader, Georgia, serif">Hosting Infrastructure</text>
+                <text x="440" y="275" text-anchor="middle" class="inverted-text" font-size="10" font-family="monospace" opacity="0.6">VMs + Docker + Traefik + Let's Encrypt</text>
+            </svg>
+        </div>
+
+        <h3>The CLI</h3>
+
+        <p>Built with Bun and TypeScript. It's the developer's interface — login with GitHub, create projects, add modules, deploy. Four commands cover 90% of what you need:</p>
+
+<pre><code>compozerr new project my-app
+compozerr new module auth
+compozerr deploy
+compozerr ssh my-app</code></pre>
+
+        <p>The CLI talks to the web API for anything that requires persistence or coordination. But it also handles local work: scaffolding projects, managing git submodules for modules, running local development environments.</p>
+
+        <p>I chose Bun over Node for the runtime. TypeScript without a transpilation step. Faster startup. And Ink for the few places where terminal UI actually matters — like watching deployment logs stream in real time.</p>
+
+        <h3>The Web Layer</h3>
+
+        <p>A .NET 9 backend with a React 19 frontend. The interesting decision here was the modular architecture — every feature implements an <code>IFeature</code> interface that's discovered through reflection at startup.</p>
+
+<pre><code>public class AuthFeature : IFeature
+{
+    public bool IsEnabled => true;
+
+    void IFeature.ConfigureServices(
+        IServiceCollection services,
+        IConfiguration config)
+    {
+        services.AddDbContext&lt;AuthDbContext&gt;();
+        services.AddScoped&lt;IAuthService, AuthService&gt;();
+    }
+}</code></pre>
+
+        <p>Authentication, billing, project management, deployment orchestration — each is a self-contained module. No registration files. No startup configuration ceremony. Drop in a class, and the system finds it.</p>
+
+        <p>The frontend generates TypeScript types from the backend's OpenAPI spec. Change a C# model, regenerate, and the compiler catches every place the frontend needs updating. Type safety from database to browser — the kind of guarantee you don't appreciate until you've chased a typo through three layers of an application.</p>
+
+        <h3>The Hosting Infrastructure</h3>
+
+        <p>This is where the complexity lives — and where the platform earns its keep.</p>
+
+        <p>A Node.js manager service runs on the hosting machine. When a deployment arrives, it orchestrates the full sequence:</p>
+
+        <ol>
+            <li>Provision or reuse a VM — Proxmox templates for fast cloning</li>
+            <li>Clone the repository at the exact commit</li>
+            <li>Install dependencies and run the build</li>
+            <li>Detect running services and their ports</li>
+            <li>Update Traefik's dynamic configuration for routing</li>
+            <li>Configure SSL certificates via Let's Encrypt</li>
+        </ol>
+
+        <p>The developer sees <em>"Deployed."</em> The platform handled VM provisioning, Docker orchestration, reverse proxy configuration, and certificate management behind a single word.</p>
+
+        <h2>Decisions That Mattered</h2>
+
+        <h3>Traefik over Nginx for routing</h3>
+
+        <p>Nginx is excellent for serving static files. But for dynamic, multi-service routing with automatic SSL? Traefik was the clear choice. Its file-based configuration means the manager can update routing without restarting anything:</p>
+
+<pre><code>http:
+  routers:
+    my-app-frontend:
+      rule: "Host(`myapp.com`)"
+      service: "my-app-3000"
+      tls:
+        certResolver: "leresolver"
+  services:
+    my-app-3000:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.100:3000"</code></pre>
+
+        <p>Add a domain, update a YAML file, and Traefik picks it up. No restarts. No downtime. Each project gets its own routing rules — frontend, backend, database — all wired through the same proxy with automatic HTTPS.</p>
+
+        <h3>Sequential deployment queue</h3>
+
+        <p>One deployment at a time. This sounds like a limitation, but it's deliberate. Parallel deployments compete for CPU, memory, and network bandwidth on the hosting machine. Sequential processing means predictable build times and linear, debuggable logs.</p>
+
+        <p>When something fails at 3 AM, you want a single timeline of events to read through — not interleaved output from three concurrent builds.</p>
+
+        <h3>Modules as git submodules</h3>
+
+        <p>Each module in a Compozerr project is its own git repository, added as a submodule. This means modules can be shared across projects, versioned independently, and contributed to by different teams. A database module used in ten projects gets updated once and pulled everywhere.</p>
+
+        <p>Git submodules have a reputation for being painful. They are. But the alternative — a monorepo with manual dependency management — is worse at scale. The CLI abstracts away the submodule commands, so developers rarely need to think about the underlying machinery.</p>
+
+        <h3>MediatR for everything</h3>
+
+        <p>Every backend operation goes through MediatR — commands for writes, queries for reads. It's verbose. But every operation is independently testable, consistently validated through FluentValidation, and easy to trace through the codebase. When a deployment fails, the stack trace tells you exactly which handler broke and why.</p>
+
+        <h2>What I Learned</h2>
+
+        <p>Building a deployment platform teaches you things that building applications never does.</p>
+
+        <p><strong>Infrastructure is state.</strong> Applications are mostly stateless — deploy a new version, the old one disappears. Infrastructure accumulates. VMs need cleanup. SSL certificates expire. Traefik configs grow. Disk space fills. Managing state over time is a fundamentally different challenge than serving a request.</p>
+
+        <p><strong>Reliability beats features.</strong> Nobody cares about a beautiful dashboard if deployments fail randomly. The boring work — retry logic, health checks, graceful error handling, sequential queues — is what makes a platform trustable. I spent more time on error recovery than on any single feature.</p>
+
+        <p><strong>Developer experience is the product.</strong> The technical architecture matters, but the CLI UX determines adoption. Fast feedback, clear error messages, and sensible defaults do more than any architectural diagram. A deploy command that takes 30 seconds to respond — even with a spinner — feels broken. One that streams logs in real time feels alive.</p>
+
+        <p><strong>You will rewrite the deployment pipeline.</strong> Three times. The first version was bash scripts. The second was a Node.js orchestrator with too many edge cases. The third — the current one — finally understood that deployments are a state machine, not a script. Each state has clear success and failure conditions. Each transition is logged and reversible.</p>
+
+        <hr class="ornament"/>
+
+        <p>The best infrastructure is the kind you don't think about. Compozerr isn't trying to be innovative — it's trying to be invisible. Write your code, run one command, and move on to the next problem.</p>
+
+        <p>That was always the vision. It took three repositories, two runtime languages, a reverse proxy, a VM orchestrator, and a lot of 3 AM debugging sessions to get there. But now, <code>compozerr deploy</code> does what it promises.</p>
+
+        <p>Everything else is plumbing.</p>
+
+        <footer class="article-footer">
+            <p>February 2026</p>
+        </footer>
+    </body>
+</html>
