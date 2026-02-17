@@ -134,14 +134,24 @@ small {
    Links
    ======================================== */
 a {
-    color: var(--text-muted);
-    text-decoration: underline dotted;
+    color: var(--link);
+    text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 2px;
     transition: color 0.15s ease;
 }
 
 a:hover {
+    color: var(--link-hover);
+}
+
+/* Post pages: dotted underline, grey links */
+body.post a {
+    color: var(--text-muted);
+    text-decoration-style: dotted;
+}
+
+body.post a:hover {
     color: var(--link-hover);
 }
 

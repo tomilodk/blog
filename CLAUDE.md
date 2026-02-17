@@ -11,7 +11,7 @@ Static blog served via Nginx in Docker. Vanilla HTML/CSS, no framework.
 ### Links & SEO
 - **Every reference to a company, product, or website must be an `<a>` tag** linking to that entity's homepage or relevant page (e.g., docs). This includes tools (Traefik, Docker, n8n), platforms (Vercel, Railway, GitHub), languages/runtimes (Bun, Node.js, TypeScript, .NET, React), and compozerr itself.
 - **compozerr references** link to `https://compozerr.com`. References to specific CLI commands (like `compozerr deploy`) in prose can link to compozerr docs.
-- Links are styled with **dotted underline and grey color** (`var(--text-muted)`). This is set globally in `index.css`.
+- **Post pages** (`body.post`) use **dotted underline and grey color** (`var(--text-muted)`) for links. The index page uses default solid underline styling. Post pages must have `<body class="post">`.
 - Inside code blocks (`<pre><code>`), text remains as code — no `<a>` tags.
 
 ### SEO Purpose
