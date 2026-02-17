@@ -52,7 +52,7 @@
     </head>
     <body>
         <nav class="post-nav">
-            <a href="/">&larr; mappso</a>
+            <a href="/">&larr; mappso blog</a>
         </nav>
 
         <h1>AI Agents While You Sleep</h1>
@@ -64,7 +64,7 @@
 
         <h2>The Pipeline</h2>
 
-        <p>It starts with a recording. A 43-minute Google Meet where you and the product owner discuss a new feature. You're not taking notes — you're just talking through requirements, edge cases, preferences.</p>
+        <p>It starts with a recording. A 43-minute <a href="https://meet.google.com">Google Meet</a> where you and the product owner discuss a new feature. You're not taking notes — you're just talking through requirements, edge cases, preferences.</p>
 
         <p>When the call ends, a chain reaction begins:</p>
 
@@ -144,15 +144,15 @@
             </svg>
         </div>
 
-        <p>The transcription lands in Notion as a draft PLAN.md — a structured document describing what needs to be built. Simultaneously, Telegram pings me: "New plan ready. Which project?"</p>
+        <p>The transcription lands in <a href="https://www.notion.so">Notion</a> as a draft PLAN.md — a structured document describing what needs to be built. Simultaneously, <a href="https://telegram.org">Telegram</a> pings me: "New plan ready. Which project?"</p>
 
-        <p>I reply with a single word. n8n creates a PR with the plan attached and adds a label: <code>claude-plan</code>.</p>
+        <p>I reply with a single word. <a href="https://n8n.io">n8n</a> creates a PR with the plan attached and adds a label: <code>claude-plan</code>.</p>
 
         <p>That label triggers the orchestrator.</p>
 
         <h2>The Orchestrator</h2>
 
-        <p>GitHub Actions watches for specific labels. Each label triggers a stage, and each stage prepares the next:</p>
+        <p><a href="https://github.com/features/actions">GitHub Actions</a> watches for specific labels. Each label triggers a stage, and each stage prepares the next:</p>
 
         <div class="diagram">
             <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
@@ -202,7 +202,7 @@
 
         <p><strong>Plan</strong> analyzes the requirements and creates a detailed implementation plan — what files to modify, what patterns to follow, what tests to write.</p>
 
-        <p><strong>Execute</strong> is where the code gets written. Claude implements the plan in an isolated git worktree, keeping the main branch clean until validation passes.</p>
+        <p><strong>Execute</strong> is where the code gets written. <a href="https://claude.ai">Claude</a> implements the plan in an isolated git worktree, keeping the main branch clean until validation passes.</p>
 
         <p><strong>Validate</strong> builds the project, starts services, and runs tests. If something fails, it documents the issues and triggers <strong>Fix</strong>.</p>
 
@@ -244,7 +244,7 @@
 
         <h3>The Toolkit</h3>
 
-        <p>The orchestrator doesn't run inside the target project — it copies a toolkit into an isolated git worktree. This toolkit contains everything Claude needs to work autonomously:</p>
+        <p>The orchestrator doesn't run inside the target project — it copies a toolkit into an isolated git worktree. This toolkit contains everything <a href="https://claude.ai">Claude</a> needs to work autonomously:</p>
 
         <div class="diagram">
             <svg viewBox="0 0 580 280" xmlns="http://www.w3.org/2000/svg">
@@ -287,13 +287,13 @@
             </svg>
         </div>
 
-        <p>The toolkit includes an <strong>MCP server</strong> that gives Claude custom tools — tracking iteration history, storing evidence, managing navigation routes. It includes <strong>hooks</strong> that detect when Claude signals completion. And it includes the <strong>subagent prompts</strong> themselves — focused instructions for specific tasks.</p>
+        <p>The toolkit includes an <strong>MCP server</strong> that gives <a href="https://claude.ai">Claude</a> custom tools — tracking iteration history, storing evidence, managing navigation routes. It includes <strong>hooks</strong> that detect when Claude signals completion. And it includes the <strong>subagent prompts</strong> themselves — focused instructions for specific tasks.</p>
 
-        <p>This architecture means the orchestrator is project-agnostic. The same workflows handle a React frontend, a .NET backend, or a monorepo with both. Init discovers the specifics; the toolkit provides the scaffolding.</p>
+        <p>This architecture means the orchestrator is project-agnostic. The same workflows handle a <a href="https://react.dev">React</a> frontend, a <a href="https://dotnet.microsoft.com">.NET</a> backend, or a monorepo with both. Init discovers the specifics; the toolkit provides the scaffolding.</p>
 
         <h3>Ralph Loop</h3>
 
-        <p>The key innovation is <em>Ralph Loop</em> — a pattern for iterative AI execution. Each iteration, Claude runs with fresh context but can see summaries of its previous work. When it's done, it signals completion with a special tag.</p>
+        <p>The key innovation is <em>Ralph Loop</em> — a pattern for iterative AI execution. Each iteration, <a href="https://claude.ai">Claude</a> runs with fresh context but can see summaries of its previous work. When it's done, it signals completion with a special tag.</p>
 
         <p>This solves the context window problem. Long implementations don't need to fit in a single context — they're broken into digestible iterations, each building on the last.</p>
 
@@ -302,9 +302,9 @@
         <p>None of these pieces are remarkable on their own:</p>
 
         <ul>
-            <li><strong>n8n</strong> connects APIs without code. Watch a folder, transcribe a file, send a message.</li>
-            <li><strong>GitHub Actions</strong> runs workflows on events. A label triggers a job.</li>
-            <li><strong>Claude</strong> writes code when given context. A plan becomes an implementation.</li>
+            <li><a href="https://n8n.io"><strong>n8n</strong></a> connects APIs without code. Watch a folder, transcribe a file, send a message.</li>
+            <li><a href="https://github.com/features/actions"><strong>GitHub Actions</strong></a> runs workflows on events. A label triggers a job.</li>
+            <li><a href="https://claude.ai"><strong>Claude</strong></a> writes code when given context. A plan becomes an implementation.</li>
         </ul>
 
         <p>But connected together, they create something that feels like magic: meetings become implementations. Ideas become PRs. Sleep becomes productive time.</p>
