@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/index.css" />
+        <title>Why I stopped trusting my AI agents | mappso</title>
+        <link rel="icon" type="image/png" href="/assets/favicon.png" />
+        <link rel="canonical" href="https://blog.mappso.com/posts/why-i-stopped-trusting-my-ai-agents/" />
+        <meta name="description" content="How a database of validation checks replaced hope as a quality strategy." />
+        <meta property="og:title" content="Why I stopped trusting my AI agents" />
+        <meta property="og:description" content="How a database of validation checks replaced hope as a quality strategy." />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content="https://blog.mappso.com/posts/why-i-stopped-trusting-my-ai-agents/" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Why I stopped trusting my AI agents" />
+        <meta name="twitter:description" content="How a database of validation checks replaced hope as a quality strategy." />
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": "Why I stopped trusting my AI agents",
+            "description": "How a database of validation checks replaced hope as a quality strategy.",
+            "datePublished": "2026-02-20",
+            "author": {
+                "@type": "Person",
+                "name": "Milo"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "mappso"
+            }
+        }
+        </script>
+        <style>
+            .diagram {
+                width: 100%;
+                margin: 32px 0;
+            }
+            .diagram svg {
+                width: 100%;
+                height: auto;
+            }
+            .inverted-text {
+                fill: var(--bg);
+            }
+        </style>
+    </head>
+    <body class="post">
+        <nav class="post-nav">
+            <a href="/">&larr; mappso blog</a>
+        </nav>
+
+        <h1>Why I stopped trusting my AI agents</h1>
+        <p class="intro">How a database of validation checks replaced hope as a quality strategy.</p>
+
+        <h2>The confidence problem</h2>
+
+        <p>I run autonomous AI agent pipelines that build software. <a href="https://claude.ai">Claude</a> writes PRDs, generates marketing copy, implements features, deploys apps. The agents operate inside a loop: they receive context, do work, and emit a <code>&lt;complete&gt;</code> tag when they think they're done. The runner sees that tag and moves on to the next stage.</p>
+
+        <p>The problem is that agents are confidently wrong. A PRD with a feature matrix that references APIs that don't exist. Marketing content with hallucinated customer quotes. A build ticket that specifies dependencies with version conflicts. The agent wrote <code>&lt;complete&gt;DONE&lt;/complete&gt;</code> and the system believed it.</p>
+
+        <p>For a while I treated this like a people-management problem. Give better prompts. Add more examples. Be more specific about expectations. But the failure mode isn't confusion -- it's misplaced confidence. The agent genuinely believes it did good work. And the runner has no mechanism to disagree.</p>
+
+        <h2>Checking after the fact</h2>
+
+        <p>My first instinct was reactive validation. After the agent finishes, check the output.</p>
+
+        <p>I built health checks that run after deployment -- <a href="https://playwright.dev">Playwright</a> tests, Lighthouse scores above 80, responsive layout verification. I added scoring rubrics with weighted dimensions to evaluate niche research quality. I wired up human-in-the-loop approval gates through <a href="https://telegram.org">Telegram</a> so I could review screenshots before anything went live. For marketing content, I ran creative tournaments where a critic agent scores three competing copywriter agents on eight dimensions, and only the winner advances.</p>
+
+        <p>These all help. But they share a structural flaw: the agent runs first, you check later. When validation fails, you either start the whole thing over or try to patch the output. There's no structured re-validation loop. No way to say "these three specific things are broken, fix them and prove they're fixed." You're back to hoping the next attempt goes better.</p>
+
+        <h2>Two rules</h2>
+
+        <p>The insight came from thinking about what makes deployment health checks work better than prompt-based quality control. Health checks are defined before deployment happens. They're external to the thing being checked. And they're binary -- pass or fail, no negotiation.</p>
+
+        <p>That gave me two rules. First: generate validation criteria before the work begins, not after. The criteria should be based on the requirements, not the output. Second: the agent should never control its own exit. An external system -- specifically, a database query -- should be the gatekeeper. The agent can claim it's done all it wants. Only the data decides.</p>
+
+        <h2>The architecture</h2>
+
+        <p>The system I built has five roles, and they never overlap.</p>
+
+        <p>A <strong>Validation Builder</strong> runs first. It reads the work request, assesses complexity, and generates a set of typed validation checks -- stored as rows in <a href="https://sqlite.org">SQLite</a>. Each check has a type (lint, build, test, design, accessibility, content), a description of what to verify, acceptance criteria, and a dependency list pointing to other checks that must pass first. The builder doesn't do any implementation work. It only asks: "What would need to be true for this to be done well?"</p>
+
+        <p>Then the <strong>Implementation Agent</strong> does the actual work. It writes code, generates content, builds whatever was requested. It has no awareness of the validation checks. It just works from the original requirements and signals completion when it thinks it's finished.</p>
+
+        <p>The <strong>Validation Agent</strong> processes the checks bottom-up, ordered by dependency. It spawns typed sub-validators -- a linter runs lint checks, a test runner handles test checks, a design reviewer evaluates visual checks. Each sub-validator marks its check as pass or fail with evidence. No check runs until everything it depends on has passed.</p>
+
+        <p>When checks fail, a <strong>Fix Agent</strong> queries the database for failures grouped by type and hires specialists: a designer for visual issues, a frontend engineer for UI bugs, a backend engineer for API problems. After fixes are applied, control returns to the Validation Agent, which re-processes from the lowest failing dependency upward.</p>
+
+        <div class="diagram">
+            <svg viewBox="0 0 580 480" xmlns="http://www.w3.org/2000/svg">
+                <!-- Work Request -->
+                <rect x="200" y="10" width="180" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="290" y="37" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Work Request</text>
+
+                <!-- Arrow down -->
+                <path d="M290 54 L290 74" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="290,82 286,74 294,74" fill="currentColor"/>
+
+                <!-- Validation Builder -->
+                <rect x="175" y="84" width="230" height="44" rx="6" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
+                <text x="290" y="111" text-anchor="middle" class="inverted-text" font-size="14" font-family="Newsreader, Georgia, serif">Validation Builder</text>
+
+                <!-- Arrow to SQLite -->
+                <path d="M405 106 L450 106" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="458,106 450,102 450,110" fill="currentColor"/>
+
+                <!-- SQLite -->
+                <rect x="460" y="84" width="100" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="510" y="111" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">SQLite</text>
+
+                <!-- Arrow down from builder -->
+                <path d="M290 128 L290 148" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="290,156 286,148 294,148" fill="currentColor"/>
+
+                <!-- Implementation Agent -->
+                <rect x="175" y="158" width="230" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="290" y="185" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Implementation Agent</text>
+
+                <!-- Arrow down -->
+                <path d="M290 202 L290 222" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="290,230 286,222 294,222" fill="currentColor"/>
+
+                <!-- Validation Agent -->
+                <rect x="175" y="232" width="230" height="44" rx="6" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
+                <text x="290" y="259" text-anchor="middle" class="inverted-text" font-size="14" font-family="Newsreader, Georgia, serif">Validation Agent</text>
+
+                <!-- Arrow from SQLite down to Validation Agent -->
+                <path d="M510 128 L510 254 L405 254" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="405,254 413,250 413,258" fill="currentColor"/>
+
+                <!-- Arrow down to decision -->
+                <path d="M290 276 L290 296" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="290,304 286,296 294,296" fill="currentColor"/>
+
+                <!-- Decision diamond -->
+                <polygon points="290,306 350,340 290,374 230,340" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="290" y="337" text-anchor="middle" fill="currentColor" font-size="11" font-family="monospace">all pass?</text>
+
+                <!-- Yes arrow down -->
+                <path d="M290 374 L290 414" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="290,422 286,414 294,414" fill="currentColor"/>
+                <text x="300" y="400" fill="currentColor" font-size="10" font-family="monospace" opacity="0.6">yes</text>
+
+                <!-- Done -->
+                <rect x="240" y="424" width="100" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="290" y="449" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Done</text>
+
+                <!-- No arrow right to Fix Agent -->
+                <path d="M350 340 L400 340" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="408,340 400,336 400,344" fill="currentColor"/>
+                <text x="370" y="332" fill="currentColor" font-size="10" font-family="monospace" opacity="0.6">no</text>
+
+                <!-- Fix Agent -->
+                <rect x="410" y="318" width="150" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="485" y="345" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Fix Agent</text>
+
+                <!-- Loop arrow from Fix back up to Validation -->
+                <path d="M485 318 L485 254 L405 254" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+                <polygon points="405,254 413,250 413,258" fill="currentColor" opacity="0.5"/>
+            </svg>
+        </div>
+
+        <p>Exit only happens when every check in the database is marked as passing. Not when the agent says so. Not when a timer runs out. When the data says so.</p>
+
+        <h2>Bottom-up</h2>
+
+        <p>The checks aren't a flat list. They form a directed acyclic graph -- a DAG -- where each check declares what it depends on. Lint checks and dependency checks have no prerequisites. Build depends on both. Unit tests depend on build. End-to-end tests depend on unit tests. Design review depends on e2e because there's no point evaluating visual polish on a page that crashes.</p>
+
+        <p>This ordering matters because of cascading invalidation. When the Fix Agent patches a lint error, the build check gets reset to pending. When a build fix changes an import, unit tests go back to pending. You always re-validate from foundations up. The system never evaluates a higher-level check on top of a broken foundation.</p>
+
+        <div class="diagram">
+            <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Lint box -->
+                <rect x="10" y="20" width="80" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="50" y="45" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">lint</text>
+
+                <!-- Deps box -->
+                <rect x="10" y="120" width="80" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="50" y="145" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">deps</text>
+
+                <!-- Arrows from lint and deps to build -->
+                <path d="M90 40 L150 75" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="156,78 148,79 152,71" fill="currentColor"/>
+                <path d="M90 140 L150 105" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="156,102 148,101 152,109" fill="currentColor"/>
+
+                <!-- Build box (emphasized) -->
+                <rect x="160" y="70" width="80" height="40" rx="6" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
+                <text x="200" y="95" text-anchor="middle" class="inverted-text" font-size="12" font-family="monospace">build</text>
+
+                <!-- Arrows from build to unit tests and e2e -->
+                <path d="M240 80 L310 50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="316,47 308,46 310,54" fill="currentColor"/>
+                <path d="M240 100 L310 130" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="316,133 308,134 310,126" fill="currentColor"/>
+
+                <!-- Unit tests box -->
+                <rect x="320" y="20" width="110" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="375" y="45" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">unit tests</text>
+
+                <!-- E2E box -->
+                <rect x="320" y="110" width="110" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="375" y="135" text-anchor="middle" fill="currentColor" font-size="12" font-family="monospace">e2e</text>
+
+                <!-- Arrow from e2e to design review -->
+                <path d="M430 130 L470 130" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="478,130 470,126 470,134" fill="currentColor"/>
+
+                <!-- Design review box -->
+                <rect x="480" y="110" width="90" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="525" y="128" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace">design</text>
+                <text x="525" y="142" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace">review</text>
+
+                <!-- Cascade label -->
+                <text x="290" y="185" text-anchor="middle" fill="currentColor" font-size="11" font-family="Newsreader, Georgia, serif" font-style="italic" opacity="0.6">A fix at any level cascades everything above back to pending</text>
+            </svg>
+        </div>
+
+        <p>This also prevents the oscillation problem. Without dependency ordering, fix A breaks B and fix B breaks A, and the system ping-pongs forever. With bottom-up validation, fixes are applied at the lowest failing level first. By the time you reach higher-level checks, the foundation is solid.</p>
+
+        <h2>The gatekeeper</h2>
+
+        <p>The final piece is the runner itself -- the JavaScript process that orchestrates everything. It uses the Ralph Loop pattern: fresh context window per iteration, state persisted externally, signals parsed from agent output. But now the exit condition isn't the agent's <code>&lt;complete&gt;</code> tag. It's a database query.</p>
+
+        <p>After every iteration, the runner queries <a href="https://sqlite.org">SQLite</a>: "How many critical and important checks are still failing?" If the answer is anything other than zero, it ignores the agent's completion signal and spawns a new iteration. The new iteration gets context about which checks failed, what the evidence was, and which types of fixes are needed. The agent can claim it's done in every single iteration. The runner doesn't care.</p>
+
+        <div class="diagram">
+            <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Agent iteration -->
+                <rect x="10" y="70" width="130" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="75" y="88" text-anchor="middle" fill="currentColor" font-size="12" font-family="Newsreader, Georgia, serif">Agent iteration</text>
+                <text x="75" y="104" text-anchor="middle" fill="currentColor" font-size="9" font-family="monospace" opacity="0.5">emits &lt;complete&gt;</text>
+
+                <!-- Arrow to runner -->
+                <path d="M140 92 L180 92" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="188,92 180,88 180,96" fill="currentColor"/>
+
+                <!-- JS Runner (emphasized) -->
+                <rect x="190" y="70" width="120" height="44" rx="6" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
+                <text x="250" y="88" text-anchor="middle" class="inverted-text" font-size="12" font-family="Newsreader, Georgia, serif">JS Runner</text>
+                <text x="250" y="104" text-anchor="middle" class="inverted-text" font-size="9" font-family="monospace" opacity="0.7">queries DB</text>
+
+                <!-- Arrow to decision -->
+                <path d="M310 92 L340 92" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="348,92 340,88 340,96" fill="currentColor"/>
+
+                <!-- Decision diamond -->
+                <polygon points="395,62 440,92 395,122 350,92" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="395" y="89" text-anchor="middle" fill="currentColor" font-size="9" font-family="monospace">checks</text>
+                <text x="395" y="101" text-anchor="middle" fill="currentColor" font-size="9" font-family="monospace">failing?</text>
+
+                <!-- Yes: loop back up and around -->
+                <path d="M395 62 L395 25 L75 25 L75 70" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+                <polygon points="75,70 71,62 79,62" fill="currentColor" opacity="0.5"/>
+                <text x="235" y="18" text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace" opacity="0.6">yes: spawn new iteration</text>
+
+                <!-- No: arrow to done -->
+                <path d="M440 92 L480 92" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <polygon points="488,92 480,88 480,96" fill="currentColor"/>
+                <text x="460" y="82" fill="currentColor" font-size="10" font-family="monospace" opacity="0.6">no</text>
+
+                <!-- Done -->
+                <rect x="490" y="70" width="80" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <text x="530" y="97" text-anchor="middle" fill="currentColor" font-size="14" font-family="Newsreader, Georgia, serif">Done</text>
+
+                <!-- Max iterations label -->
+                <text x="290" y="170" text-anchor="middle" fill="currentColor" font-size="11" font-family="Newsreader, Georgia, serif" font-style="italic" opacity="0.6">Max iterations as a hard ceiling</text>
+            </svg>
+        </div>
+
+        <p>There's a hard ceiling on iterations -- the system won't loop forever. But within that ceiling, the runner is relentless. It doesn't accept "mostly done" or "good enough." Every critical check passes, or the work continues. The agent does the creative work. The database holds it accountable. The runner enforces the standard.</p>
+
+        <hr class="ornament"/>
+
+        <p>This isn't about building smarter agents. The agents are already smart enough to do remarkable work. The problem was never capability -- it was accountability. An agent with no external validation will produce confident garbage as often as it produces confident excellence. You can't tell the difference until something breaks in production.</p>
+
+        <p>The database of validation checks changed the game. Define what "done" looks like before work begins. Let the agent do the creative work. Let a separate system judge the results. Let the runner enforce the standard. Trust the process, not the agent.</p>
+
+        <footer class="article-footer">
+            <p>February 2026</p>
+        </footer>
+    </body>
+</html>
